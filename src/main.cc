@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include "actor.h"
+#include "nscreen.h"
 
 // Erase characters which would be left behind
 void erase(int row, int col)
@@ -92,10 +93,10 @@ void game_loop(int ch)
 	move_actor(p_act.row(), p_act.col(), p_act.symbol());
 }
 
-void new_game()
+void new_game(nscreen scr)
 {
 	// Greet the user
-	printw("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
+	scr.add("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
 
 	// Wait for user input then scrub
 	int ch = getch();
@@ -105,26 +106,13 @@ void new_game()
 	game_loop(ch);
 }
 
-void init_ncurses()
-{
-	initscr();
-	clear();
-	noecho();
-	cbreak();
-	keypad(stdscr, TRUE);
-	curs_set(0);
-}
-
 int main()
 {
-	// Initialize the ncurses display
-	init_ncurses();
+	// Initialize the ncurses display and give it the shorthand "scr"
+	nscreen scr;
 
 	// Start a new game
-	new_game();
-
-	// Abolish ncurses
-	endwin();
+	new_game(scr);
 
 	return 0;
 }
