@@ -1,96 +1,75 @@
 #include <ncurses.h>
+
 #include "actor.h"
 #include "nscreen.h"
+#include "frame.h"
 
-// Erase characters which would be left behind
-void erase(int row, int col)
+void game_loop(frame &level_map, frame &viewport, actor &p_act, int ch)
 {
-    mvaddch(row, col, ' ');
-}
+    // Check if our user wants to play
+    if(ch == 'q' || ch =='Q')
+        return;
 
-void move_actor(int row, int col, char symbol)
-{
-    for(;;)
+    // Place our actor in the level map and center the viewport over @
+    level_map.add(p_act);
+    viewport.center(p_act);
+    viewport.refresh();
+    
+    while (1)
     {
-        int ch = getch();
+        ch = getch();
 
         if (ch == 'h' || ch == 'H' || ch == KEY_LEFT || ch == '4')
         {
-            erase(row, col);
-            col = col - 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row(), p_act.col() - 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'l' || ch == 'L' || ch == KEY_RIGHT || ch == '6')
         {
-            erase(row, col);
-            col = col + 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row(), p_act.col() + 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'k' || ch == 'K' || ch == KEY_UP || ch == '8')
         {
-            erase(row, col);
-            row = row - 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() - 1, p_act.col());
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'j' || ch == 'J' || ch == KEY_DOWN || ch == '2')
         {
-            erase(row, col);
-            row = row + 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() + 1, p_act.col());
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'y' || ch == 'Y' || ch == '7')
         {
-            erase(row, col);
-            row = row - 1;
-            col = col - 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() - 1, p_act.col() - 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'u' || ch == 'U' || ch == '9')
         {
-            erase(row, col);
-            row = row - 1;
-            col = col + 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() - 1, p_act.col() + 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'b' || ch == 'B' || ch == '1')
         {
-            erase(row, col);
-            row = row + 1;
-            col = col - 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() + 1, p_act.col() - 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         if (ch == 'n' || ch == 'N' || ch == '3')
         {
-            erase(row, col);
-            row = row + 1;
-            col = col + 1;
-            mvaddch(row, col, symbol);
-            refresh();
+            level_map.add(p_act, p_act.row() + 1, p_act.col() + 1);
+            viewport.center(p_act);
+            viewport.refresh();
         }
         else if(ch == 'q' || ch == 'Q')
             break;
     }
-}
-
-void game_loop(int ch)
-{
-    // Check if our user wants to play
-    if(ch == 'q' || ch =='Q') return;
-
-    // Create our actor, we'll put it at (10,10) for now
-    actor p_act('@', 10, 10);
-
-    mvaddch(p_act.row(), p_act.col(), p_act.symbol());
-
-    // Allow movement!
-    move_actor(p_act.row(), p_act.col(), p_act.symbol());
 }
 
 void new_game(nscreen scr)
@@ -98,17 +77,31 @@ void new_game(nscreen scr)
     // Greet the user
     scr.add("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
 
-    // Wait for user input then scrub
+    // Wait for user input
     int ch = getch();
-    clear();
+
+    // Initialize our windows
+
+    // Create a window for the level's map
+    frame level_map(scr.height(), scr.width(), 0, 0);
+
+    // Create a subwindow for the viewport
+    frame viewport(level_map, scr.height() - 6, scr.width() - 20, 0, 0);
+    
+    // Create our player actor
+    // Set initial position as the center of the map for now
+    actor p_act('@', level_map.height()/2, level_map.width()/2);
+
+    // Create our debug terrain XXX
+    level_map.fill_map();
 
     // Run the game loop
-    game_loop(ch);
+    game_loop(level_map, viewport, p_act, ch);
 }
 
 int main()
 {
-    // Initialize the ncurses display and give it the shorthand "scr"
+    // Initialize the ncurses display, scr
     nscreen scr;
 
     // Start a new game
