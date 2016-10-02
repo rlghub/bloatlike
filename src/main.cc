@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include "actor.h"
 
 // Erase characters which would be left behind
 void erase(int row, int col)
@@ -82,14 +83,13 @@ void game_loop(int ch)
 	// Check if our user wants to play
 	if(ch == 'q' || ch =='Q') return;
 
-	// Slap an actor on the screen at (10,10)
-	int row = 10, col = 10;
-	char player_symbol = '@';
+	// Create our actor, we'll put it at (10,10) for now
+	actor p_act('@', 10, 10);
 
-	mvaddch(row, col, player_symbol);
+	mvaddch(p_act.row(), p_act.col(), p_act.symbol());
 
 	// Allow movement!
-	move_actor(row, col, player_symbol);
+	move_actor(p_act.row(), p_act.col(), p_act.symbol());
 }
 
 void new_game()
