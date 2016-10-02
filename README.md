@@ -2,6 +2,7 @@ Bloatlike
 ---
 To compile, you will need a gcc toolchain and the ncurses dev packages.
 
-`sh compile.sh
-./rl`
+`sh compile.sh`
+
+`./rl`
 
