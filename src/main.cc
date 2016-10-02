@@ -40,6 +40,38 @@ void move_actor(int row, int col, char symbol)
 			mvaddch(row, col, symbol);
 			refresh();
 		}
+		if (ch == 'y' || ch == 'Y' || ch == '7')
+		{
+			erase(row, col);
+			row = row - 1;
+			col = col - 1;
+			mvaddch(row, col, symbol);
+			refresh();
+		}
+		if (ch == 'u' || ch == 'U' || ch == '9')
+		{
+			erase(row, col);
+			row = row - 1;
+			col = col + 1;
+			mvaddch(row, col, symbol);
+			refresh();
+		}
+		if (ch == 'b' || ch == 'B' || ch == '1')
+		{
+			erase(row, col);
+			row = row + 1;
+			col = col - 1;
+			mvaddch(row, col, symbol);
+			refresh();
+		}
+		if (ch == 'n' || ch == 'N' || ch == '3')
+		{
+			erase(row, col);
+			row = row + 1;
+			col = col + 1;
+			mvaddch(row, col, symbol);
+			refresh();
+		}
 		else if(ch == 'q' || ch == 'Q')
 			break;
 	}
