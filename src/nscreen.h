@@ -16,7 +16,7 @@ public:
     ~nscreen();
 
     // Print a message on the screen
-    void add(const char *message);
+    void print(const char *message);
 
     // Get the screen's height and width
     int height();

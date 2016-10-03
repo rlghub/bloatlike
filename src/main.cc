@@ -95,7 +95,7 @@ int hud_width()
 void new_game(nscreen scr)
 {
     // Greet the user
-    scr.add("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
+    scr.print("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
 
     // Wait for user input
     int ch = getch();

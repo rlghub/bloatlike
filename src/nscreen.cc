@@ -21,7 +21,7 @@ nscreen::~nscreen()
 }
 
 // Print a message on the screen
-void nscreen::add(const char *message)
+void nscreen::print(const char *message)
 {
     printw(message);
 }
