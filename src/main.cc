@@ -72,6 +72,26 @@ void game_loop(frame &level_map, frame &viewport, actor &p_act, int ch)
     }
 }
 
+// Get the player's name XXX: currently a constant
+const char * get_player_name()
+{
+    return "Player";
+}
+
+// Prints out information in the right-hand pane
+void handle_hud(frame hud)
+{
+    // Get the player's name and print it out at the top of the pane
+    hud.print(get_player_name(), 0, 2);
+    hud.refresh();
+}
+
+// Constant width of the HUD XXX: need to handle for tinyterms!
+int hud_width()
+{
+    return 20;
+}
+
 void new_game(nscreen scr)
 {
     // Greet the user
@@ -87,7 +107,13 @@ void new_game(nscreen scr)
 
     // Create a subwindow for the viewport
     frame viewport(level_map, scr.height() - 6, scr.width() - 20, 0, 0);
-    
+   
+    // Create a frame for the HUD, we will use the right-hand pane for this
+    frame hud(scr.height(), hud_width(), 0, scr.width() - 20);
+
+    // Manage the HUD
+    handle_hud(hud);
+
     // Create our player actor
     // Set initial position as the center of the map for now
     actor p_act('@', level_map.height()/2, level_map.width()/2);

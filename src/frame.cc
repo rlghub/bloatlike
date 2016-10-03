@@ -175,3 +175,7 @@ void frame::fill_map()
     }
 }
 
+void frame::print(const char *message, int row, int col)
+{
+    mvwprintw(_w, row, col, message);
+}
