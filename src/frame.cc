@@ -114,13 +114,13 @@ void frame::move(int row, int col)
 // Get the window
 WINDOW* frame::win()
 {
-	return _w;
+    return _w;
 }
 
 // Get the parent window
 WINDOW* frame::super()
 {
-	return _super;
+    return _super;
 }
 
 // Return true if this window is a subwindow
@@ -175,7 +175,9 @@ void frame::fill_map()
     }
 }
 
-void frame::print(const char *message, int row, int col)
+void frame::print(std::string message, int row, int col)
 {
-    mvwprintw(_w, row, col, message);
+   std::string str = message;
+   const char * msg = str.c_str();
+   mvwaddnstr(_w, row, col, msg, -1);
 }

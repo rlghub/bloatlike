@@ -1,53 +1,102 @@
 #include <ncurses.h>
+#include <curses.h>
+#include <string>
 
 #include "main.h"
 #include "actor.h"
-#include "nscreen.h"
 #include "frame.h"
 
-#define HUD_WIDTH 20
-#define TERM_MINWIDTH 80
-#define TERM_MINHEIGHT 24
+/* A few definitions to set up and explain the minimum terminal size
+   21 + 1 + 58 = 80
+    7 + 1 + 16 = 24 */
+// Size of the HUD (right-hand pane) display
+#define HUD_WIDTH 21
+// Size of the message log (bottom-pane) display
+#define LOG_HEIGHT 7
+// Size of the border between the viewport and the above displays
+#define BORDER_SIZE 1
+/* Minimum size of the viewport (mostly arbitrary, adds with the above
+   to the "standard" terminal size of 80x24) */
+#define VIEW_MINWIDTH 58
+#define VIEW_MINHEIGHT 16
 
+// Entry point of the program!
 int main()
 {
     // Initialize the ncurses display, scr
-    nscreen scr;
+    init_ncurses();
     
     // Check if this screen is large enough for the game
-    if (scr.width() < 80 || scr.height() < 24)
+    if (COLS < (VIEW_MINWIDTH + HUD_WIDTH + BORDER_SIZE)
+        || LINES < (VIEW_MINHEIGHT + LOG_HEIGHT + BORDER_SIZE))
     {
-        scr.~nscreen();
+        clear_ncurses();
         printf("This game needs a terminal size of at least 80x24 to run!\n"
-                "Please adjust your terminal size and try again.\n");
+               "Please adjust your terminal size and try again.\n");
 
     }
-    else if ((scr.width() >= 80) && (scr.height() >= 24))
+    else if (COLS >= (VIEW_MINWIDTH + HUD_WIDTH + BORDER_SIZE)
+             && (LINES >= (VIEW_MINHEIGHT + LOG_HEIGHT + BORDER_SIZE)))
     {
         // Start a new game
-        new_game(scr);
+        new_game();
     }
+
+    clear_ncurses();
+
     return 0;
 }
 
-void new_game(nscreen scr)
+// Summon the ncurses
+void init_ncurses()
 {
-    // Greet the user
-    scr.print("Welcome.\nPress the any key to play.\nPress [q] to quit!\n");
+    initscr();
+    clear();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+}
 
-    // Wait for user input
-    int ch = getch();
+// Abolish ncurses
+void clear_ncurses()
+{
+    endwin();
+}
+
+void new_game()
+{
+    refresh();
+    // Create a window for the new game screen.
+    frame game_menu(LINES, COLS, 0, 0);
+
+    // Greet the user
+    game_menu.print("Welcome.\nPress the [enter] key to play.\n"
+                    "Press [q] to quit!\n", 0, 0);
+    game_menu.refresh();
+
+    int ch;
+
+    while (1)
+    {
+        ch = getch();
+
+        if (ch == '\r' || ch == '\n' || ch == 'q' || ch == 'Q')
+            break;
+    }
 
     // Initialize our windows
+    refresh();
 
     // Create a window for the level's map
-    frame level_map(scr.height(), scr.width(), 0, 0);
+    frame level_map(LINES, COLS, 0, 0);
 
     // Create a subwindow for the viewport
-    frame viewport(level_map, scr.height() - 6, scr.width() - 20, 0, 0);
+    frame viewport(level_map, LINES - (LOG_HEIGHT + BORDER_SIZE),
+            COLS - (HUD_WIDTH + BORDER_SIZE), 0, 0);
    
     // Create a frame for the HUD, we will use the right-hand pane for this
-    frame hud(scr.height(), HUD_WIDTH, 0, scr.width() - 20);
+    frame hud(LINES, HUD_WIDTH, 0, COLS - HUD_WIDTH);
 
     // Manage the HUD
     handle_hud(hud);
@@ -67,7 +116,7 @@ void new_game(nscreen scr)
 void handle_hud(frame hud)
 {
     // Get the player's name and print it out at the top of the pane
-    hud.print(get_player_name(), 0, 2);
+    hud.print(get_player_name(), 0, 0);
     hud.refresh();
 }
 
@@ -141,7 +190,7 @@ void game_loop(frame &level_map, frame &viewport, actor &p_act, int ch)
 
 // XXX: Constants we will be using temporarily for testing purposes
 
-const char * get_player_name()
+std::string get_player_name()
 {
     return "Player";
 }

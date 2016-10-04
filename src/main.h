@@ -1,7 +1,7 @@
+#include <string>
 #include <ncurses.h>
 
 #include "actor.h"
-#include "nscreen.h"
 #include "frame.h"
 
 #ifndef MAIN_H
@@ -9,16 +9,16 @@
 
 void game_loop(frame &, frame &, actor &, int);
 
-const char * get_player_name();
+std::string get_player_name();
 
 void handle_hud(frame);
 
-void new_game(nscreen);
+void new_game();
 
 int main();
 
-// XXX: Lazy constants to be refactored out later
-int hud_width();
+void init_ncurses();
+void clear_ncurses();
 
 #endif
 

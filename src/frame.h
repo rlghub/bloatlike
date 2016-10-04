@@ -1,4 +1,6 @@
+#include <string>
 #include <ncurses.h>
+
 #include "actor.h"
 
 #ifndef FRAME_H
@@ -69,7 +71,7 @@ public:
     // Create a simple map for debugging purposes
     void fill_map();
 
-    void print(const char *message, int row, int col);
+    void print(std::string message, int row, int col);
 };
 
 #endif
